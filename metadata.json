@@ -1,0 +1,6 @@
+{
+  "name": "Fiendfyre Bridge: Magical Cyber Defense",
+  "description": "A Harry Potter-themed magical 2D cybersecurity trivia adventure. Spellcast across floating stone steps to escape cursed Fiendfyre flames and reach Hogwarts castle.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

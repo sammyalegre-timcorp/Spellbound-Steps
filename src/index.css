@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-cinzel: 'Cinzel', serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: #08090d;
+    color: #ede5d8;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, .font-cinzel {
+    font-family: var(--font-cinzel);
+  }
+}
+
+/* Custom Harry Potter Dark Academia utilities */
+.parchment-panel {
+  background: radial-gradient(circle at 50% 20%, #1c1822 0%, #121017 100%);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(0, 0, 0, 0.5);
+}
+
+.parchment-card {
+  background: linear-gradient(145deg, rgba(28, 24, 34, 0.95), rgba(18, 16, 24, 0.98));
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.gold-glow {
+  text-shadow: 0 0 12px rgba(234, 179, 8, 0.5), 0 0 24px rgba(234, 179, 8, 0.2);
+}
+
+.fiendfyre-glow {
+  filter: drop-shadow(0 0 16px rgba(239, 68, 68, 0.6));
+}
+
+.spell-beam {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0) 0%, rgba(56, 189, 248, 1) 50%, rgba(250, 204, 21, 1) 100%);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.8), 0 0 30px rgba(250, 204, 21, 0.6);
+}
+
+/* Floating animation for stones */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-float {
+  animation: floatGentle 3s ease-in-out infinite;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0d0c14;
+}
+::-webkit-scrollbar-thumb {
+  background: #2f283d;
+  border-radius: 3px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4a3e61;
+}
