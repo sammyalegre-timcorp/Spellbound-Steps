@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bgMaskGrad" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stopColor="#1a1528" />
+      <stop offset="70%" stopColor="#0d0a14" />
+      <stop offset="100%" stopColor="#050408" />
+    </radialGradient>
+    <linearGradient id="goldMaskGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#fef08a" />
+      <stop offset="40%" stopColor="#eab308" />
+      <stop offset="80%" stopColor="#ca8a04" />
+      <stop offset="100%" stopColor="#854d0e" />
+    </linearGradient>
+    <linearGradient id="flameMaskGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stopColor="#7f1d1d" />
+      <stop offset="40%" stopColor="#dc2626" />
+      <stop offset="75%" stopColor="#f97316" />
+      <stop offset="100%" stopColor="#fef08a" />
+    </linearGradient>
+    <radialGradient id="spellMaskGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#38bdf8" stopOpacity="1" />
+      <stop offset="50%" stopColor="#0284c7" stopOpacity="0.6" />
+      <stop offset="100%" stopColor="#0369a1" stopOpacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Full-bleed background for maskable icon -->
+  <rect width="512" height="512" fill="url(#bgMaskGrad)" />
+
+  <!-- Scaled down to 80% to fit within maskable safe-zone (circle/squircle) -->
+  <g transform="translate(51.2, 51.2) scale(0.8)">
+    <!-- Outer Filigree Shield Rim -->
+    <path
+      d="M256,40 C350,40 430,75 430,170 C430,310 330,420 256,470 C182,420 82,310 82,170 C82,75 162,40 256,40 Z"
+      fill="#120e1c"
+      stroke="url(#goldMaskGrad)"
+      stroke-width="12"
+    />
+
+    <!-- Inner Ornate Shield Border -->
+    <path
+      d="M256,62 C334,62 406,92 406,172 C406,294 318,394 256,440 C194,394 106,294 106,172 C106,92 178,62 256,62 Z"
+      fill="none"
+      stroke="#d4af37"
+      stroke-width="3"
+      stroke-dasharray="8 6"
+      opacity="0.8"
+    />
+
+    <!-- Fiendfyre Flames at the base -->
+    <path
+      d="M170,390 C190,320 215,360 235,310 C250,270 260,330 280,290 C300,345 325,315 342,390 C310,410 280,430 256,440 C232,430 202,410 170,390 Z"
+      fill="url(#flameMaskGrad)"
+      opacity="0.9"
+    />
+
+    <!-- Central Hogwarts Defense Castle Tower -->
+    <path
+      d="M220,290 L220,180 L236,180 L236,160 L248,160 L248,180 L264,180 L264,160 L276,160 L276,180 L292,180 L292,290 Z"
+      fill="#1e182e"
+      stroke="url(#goldMaskGrad)"
+      stroke-width="5"
+    />
+
+    <!-- Arched Gate Portcullis -->
+    <path
+      d="M236,290 L236,236 C236,225 245,216 256,216 C267,216 276,225 276,236 L276,290 Z"
+      fill="#0a0710"
+      stroke="url(#goldMaskGrad)"
+      stroke-width="4"
+    />
+
+    <!-- Glowing Key / Ancient Ward Shield Motif -->
+    <circle cx="256" cy="130" r="32" fill="none" stroke="url(#goldMaskGrad)" stroke-width="8" />
+    <circle cx="256" cy="130" r="16" fill="url(#spellMaskGlow)" />
+    <polygon points="256,108 262,124 278,124 265,134 270,150 256,140 242,150 247,134 234,124 250,124" fill="#fef08a" />
+
+    <!-- Diagonal Crossing Elder Wand -->
+    <line x1="140" y1="360" x2="370" y2="130" stroke="#ca8a04" stroke-width="12" stroke-linecap="round" />
+    <line x1="140" y1="360" x2="370" y2="130" stroke="#fef08a" stroke-width="4" stroke-linecap="round" />
+    <circle cx="200" cy="300" r="8" fill="#eab308" />
+    <circle cx="255" cy="245" r="9" fill="#eab308" />
+    <circle cx="310" cy="190" r="8" fill="#eab308" />
+    <circle cx="376" cy="124" r="28" fill="url(#spellMaskGlow)" />
+    <circle cx="376" cy="124" r="9" fill="#ffffff" />
+    <circle cx="376" cy="124" r="4" fill="#38bdf8" />
+  </g>
+</svg>

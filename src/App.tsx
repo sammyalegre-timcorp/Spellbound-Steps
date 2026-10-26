@@ -22,6 +22,8 @@ import { QuestionCard } from './components/QuestionCard';
 import { VictoryModal } from './components/VictoryModal';
 import { GameOverModal } from './components/GameOverModal';
 import { AdminPanel } from './components/AdminPanel';
+import { PWAInstallButton } from './components/PWAInstallButton';
+import { OfflineIndicator } from './components/OfflineIndicator';
 import { Flame, Wand2, Play, Volume2, VolumeX, ShieldCheck } from 'lucide-react';
 
 export default function App() {
@@ -337,15 +339,21 @@ export default function App() {
         <div className="fixed inset-0 pointer-events-none z-50 animate-panic-flash border-4 border-red-600/70" />
       )}
 
-      {/* Floating Sound Toggle Button (Top-Right) */}
-      <button
-        onClick={handleToggleSound}
-        aria-label={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
-        title={isMuted ? 'Sound muted (click to unmute)' : 'Sound active (click to mute)'}
-        className="absolute top-2.5 right-3 z-40 p-1.5 sm:p-2 rounded-full bg-[#12101b]/80 border border-amber-400/30 text-stone-300 hover:text-amber-300 backdrop-blur-sm shadow-md transition-all hover:scale-105 cursor-pointer"
-      >
-        {isMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
-      </button>
+      {/* Floating Controls (Top-Right): PWA Install + Sound Toggle */}
+      <div className="absolute top-2.5 right-3 z-40 flex items-center gap-2">
+        <PWAInstallButton />
+        <button
+          onClick={handleToggleSound}
+          aria-label={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
+          title={isMuted ? 'Sound muted (click to unmute)' : 'Sound active (click to mute)'}
+          className="p-1.5 sm:p-2 rounded-full bg-[#12101b]/80 border border-amber-400/30 text-stone-300 hover:text-amber-300 backdrop-blur-sm shadow-md transition-all hover:scale-105 cursor-pointer"
+        >
+          {isMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+        </button>
+      </div>
+
+      {/* Offline Status Toast Indicator */}
+      <OfflineIndicator />
 
       {/* TITLE SCREEN: Compact, centered, 100% no scroll */}
       {gameStatus === 'TITLE' ? (
