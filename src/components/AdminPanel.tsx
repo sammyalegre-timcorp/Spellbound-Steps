@@ -532,18 +532,26 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         onSaveSettings({ ...settings, selectedHouse: house });
                         showNotice(`House set to ${hTheme.name}`);
                       }}
-                      className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex flex-col gap-1.5 ${
+                      className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer flex flex-col gap-1.5 ${
                         isSelected
-                          ? 'border-amber-400 bg-[#251e33] shadow-[0_0_12px_rgba(212,175,55,0.25)]'
+                          ? 'border-amber-400 bg-[#251e33] shadow-[0_0_12px_rgba(212,175,55,0.25)] ring-1 ring-amber-400/50'
                           : 'border-stone-800 bg-[#14111d] hover:border-stone-700'
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-cinzel text-xs font-bold capitalize text-[#ede5d8]">
-                          {hTheme.name}
-                        </span>
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={hTheme.avatarUrl}
+                          alt={hTheme.name}
+                          referrerPolicy="no-referrer"
+                          className="w-7 h-7 rounded-full object-cover border border-black/40"
+                        />
+                        <div className="flex-1 truncate">
+                          <span className="font-cinzel text-xs font-bold capitalize text-[#ede5d8] block">
+                            {hTheme.name}
+                          </span>
+                        </div>
                         <div
-                          className="w-3.5 h-3.5 rounded-full border border-black/40"
+                          className="w-3 h-3 rounded-full border border-black/40"
                           style={{ backgroundColor: hTheme.primaryColor }}
                         />
                       </div>
@@ -660,7 +668,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             {/* Time Penalty Wrong */}
             <div className="space-y-1">
               <div className="flex justify-between text-xs">
-                <span className="font-cinzel text-[#ede5d8] font-semibold">Wrong Answer Fizzle Penalty</span>
+                <span className="font-cinzel text-[#ede5d8] font-semibold">Wrong Answer Penalty</span>
                 <span className="font-mono text-rose-400 font-bold tabular-nums">-{settings.timePenaltyWrong}s</span>
               </div>
               <input
@@ -674,7 +682,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 }}
                 className="w-full accent-rose-400 cursor-pointer"
               />
-              <p className="text-[11px] text-[#8e877a]">Seconds burned when an incantation fizzles from a wrong answer.</p>
+              <p className="text-[11px] text-[#8e877a]">Seconds burned when an incantation fails from a wrong answer.</p>
             </div>
 
             {/* Reset Defaults button */}

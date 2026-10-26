@@ -58,6 +58,116 @@
   animation: floatGentle 3s ease-in-out infinite;
 }
 
+/* Collapsing viaduct tectonic shaking */
+@keyframes viaductCrumble {
+  0%, 100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  15% {
+    transform: translate(-2px, 1.5px) rotate(-0.5deg);
+  }
+  35% {
+    transform: translate(2px, -1.5px) rotate(0.4deg);
+  }
+  55% {
+    transform: translate(-1.5px, 2px) rotate(-0.3deg);
+  }
+  75% {
+    transform: translate(1.5px, -1px) rotate(0.5deg);
+  }
+  90% {
+    transform: translate(-1px, -1.5px) rotate(-0.2deg);
+  }
+}
+
+.animate-crumble {
+  animation: viaductCrumble 0.28s infinite ease-in-out;
+}
+
+/* Falling stone debris animation */
+@keyframes rubbleFall {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(180px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-rubble {
+  animation: rubbleFall 1.8s infinite linear;
+}
+
+/* Whole screen shake on wrong answer */
+@keyframes screenShake {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  15% {
+    transform: translate(-10px, 7px) rotate(-1.2deg);
+  }
+  30% {
+    transform: translate(9px, -8px) rotate(1deg);
+  }
+  45% {
+    transform: translate(-8px, 6px) rotate(-0.8deg);
+  }
+  60% {
+    transform: translate(7px, -5px) rotate(0.8deg);
+  }
+  75% {
+    transform: translate(-5px, 3px) rotate(-0.4deg);
+  }
+  90% {
+    transform: translate(3px, -2px) rotate(0.3deg);
+  }
+}
+
+.animate-screen-shake {
+  animation: screenShake 0.45s ease-in-out;
+}
+
+/* Wizard character trembling nervously on danger ledge */
+@keyframes characterTremble {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-2.5px, 1.5px) rotate(-1.5deg);
+  }
+  40% {
+    transform: translate(2px, -1.5px) rotate(1.5deg);
+  }
+  60% {
+    transform: translate(-1.5px, -1px) rotate(-1deg);
+  }
+  80% {
+    transform: translate(2px, 1.5px) rotate(1deg);
+  }
+}
+
+.animate-tremble {
+  animation: characterTremble 0.15s infinite ease-in-out;
+}
+
+/* Last 5 seconds full-screen red panic flash */
+@keyframes panicFlash {
+  0%, 100% {
+    background-color: rgba(220, 38, 38, 0);
+    box-shadow: inset 0 0 0px rgba(220, 38, 38, 0);
+  }
+  50% {
+    background-color: rgba(220, 38, 38, 0.32);
+    box-shadow: inset 0 0 120px rgba(239, 68, 68, 0.85);
+  }
+}
+
+.animate-panic-flash {
+  animation: panicFlash 0.5s ease-in-out infinite;
+}
+
 /* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;

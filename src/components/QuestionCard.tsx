@@ -145,7 +145,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           </div>
           <div className="space-y-0.5 leading-snug">
             <span className="font-cinzel text-[11px] font-bold tracking-wider uppercase block">
-              {isCorrect ? 'Spell Succeeded! · Advanced 1 Stone' : 'Curse Fizzle · Fiendfyre Burns Stamina!'}
+              {isCorrect ? 'Spell Succeeded! · Advanced 1 Stone' : 'Spell Interrupted · Fiendfyre Strikes!'}
             </span>
             <p className="text-[11px] sm:text-xs text-[#ded7c8] line-clamp-2">
               {question.explanation}

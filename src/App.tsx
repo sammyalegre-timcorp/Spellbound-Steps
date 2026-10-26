@@ -325,9 +325,18 @@ export default function App() {
     );
   }
 
+  const isLastFiveSeconds = currentStaminaSeconds <= 5 && currentStaminaSeconds > 0 && (gameStatus === 'PLAYING' || isTransitioning);
+
   // MAIN GAME VIEW: 100% viewport visible without scrolling (h-screen overflow-hidden)
   return (
-    <div className="h-screen w-screen max-h-screen overflow-hidden bg-[#08090d] text-[#ede5d8] flex flex-col justify-between p-2 sm:p-3 relative font-sans selection:bg-amber-500/30 selection:text-amber-200">
+    <div className={`h-screen w-screen max-h-screen overflow-hidden bg-[#08090d] text-[#ede5d8] flex flex-col justify-between p-2 sm:p-3 relative font-sans selection:bg-amber-500/30 selection:text-amber-200 ${
+      isFizzling ? 'animate-screen-shake' : ''
+    }`}>
+      {/* Last 5 seconds intense red panic flash to ramp up pressure */}
+      {isLastFiveSeconds && (
+        <div className="fixed inset-0 pointer-events-none z-50 animate-panic-flash border-4 border-red-600/70" />
+      )}
+
       {/* Floating Sound Toggle Button (Top-Right) */}
       <button
         onClick={handleToggleSound}
@@ -340,17 +349,38 @@ export default function App() {
 
       {/* TITLE SCREEN: Compact, centered, 100% no scroll */}
       {gameStatus === 'TITLE' ? (
-        <div className="my-auto max-w-xl mx-auto w-full parchment-panel rounded-2xl p-4 sm:p-6 border border-[#d4af37]/40 shadow-2xl text-center space-y-4">
-          {/* Character Portrait */}
-          <div className="relative mx-auto w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-amber-400 p-1 bg-[#15121f] shadow-[0_0_25px_rgba(212,175,55,0.3)]">
-            <img
-              src={ASSETS.wizard}
-              alt="Wizard Student"
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover rounded-full"
-            />
-            <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center text-stone-950 shadow-md">
-              <Wand2 className="w-3.5 h-3.5" />
+        <div className="my-auto max-w-xl mx-auto w-full parchment-panel rounded-2xl p-4 sm:p-5 border border-[#d4af37]/40 shadow-2xl text-center space-y-3.5">
+          {/* Character Dynamic House Preview Portrait */}
+          <div className="flex flex-col items-center">
+            <div 
+              className="relative mx-auto w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 p-1 bg-[#15121f] transition-all duration-300"
+              style={{
+                borderColor: currentHouse.secondaryColor,
+                boxShadow: `0 0 25px ${currentHouse.glowColor}, 0 4px 15px rgba(0,0,0,0.8)`,
+              }}
+            >
+              <img
+                src={currentHouse.avatarUrl || ASSETS.wizard}
+                alt={`${currentHouse.name} Student`}
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover rounded-full transition-opacity duration-200"
+              />
+              <div 
+                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center text-white shadow-md border border-black/40"
+                style={{ backgroundColor: currentHouse.primaryColor }}
+              >
+                <Wand2 className="w-3.5 h-3.5" />
+              </div>
+            </div>
+
+            {/* Selected House Title & Motto Badge */}
+            <div className="mt-1.5 space-y-0.5">
+              <span className="text-xs font-cinzel font-bold text-amber-300 uppercase tracking-wider block">
+                {currentHouse.name} House
+              </span>
+              <p className="text-[10px] sm:text-[11px] text-[#b0a89a] italic max-w-sm mx-auto line-clamp-1">
+                "{currentHouse.motto}"
+              </p>
             </div>
           </div>
 
@@ -359,17 +389,17 @@ export default function App() {
               <Flame className="w-3.5 h-3.5 text-orange-500 animate-pulse" />
               <span>Escape the Cursed Fiendfyre</span>
             </span>
-            <h1 className="font-cinzel text-xl sm:text-3xl font-extrabold text-[#ede5d8] gold-glow mt-1">
+            <h1 className="font-cinzel text-xl sm:text-2xl font-extrabold text-[#ede5d8] gold-glow mt-0.5">
               The Fiendfyre Bridge
             </h1>
-            <p className="text-xs text-[#b0a89a] mt-1.5 leading-relaxed max-w-md mx-auto">
+            <p className="text-xs text-[#b0a89a] mt-1 leading-relaxed max-w-md mx-auto">
               Cross <strong>{TOTAL_STEPS} floating ancient stones</strong> to reach Hogwarts Castle before the cursed fire beasts overtake you. 
               Answer cybersecurity defense trivia to cast wards and advance!
             </p>
           </div>
 
-          {/* House Robe Selector */}
-          <div className="space-y-1.5 text-left bg-[#14111d] p-2.5 sm:p-3 rounded-xl border border-stone-800">
+          {/* House Robe Selector with Character Previews */}
+          <div className="space-y-1.5 text-left bg-[#14111d] p-2.5 rounded-xl border border-stone-800">
             <span className="text-[10px] font-cinzel text-amber-300 uppercase tracking-wider block font-semibold">
               Select Your Wizarding House Robes
             </span>
@@ -381,20 +411,29 @@ export default function App() {
                   <button
                     key={house}
                     onClick={() => {
-                      sound.playParchmentClick();
+                      sound.playHopChime();
                       const updated = { ...settings, selectedHouse: house };
                       setSettings(updated);
                       saveStoredSettings(updated);
                     }}
-                    className={`p-1.5 sm:p-2 rounded-lg border text-xs font-cinzel capitalize transition-all cursor-pointer flex items-center justify-between ${
+                    className={`p-1.5 rounded-lg border text-xs font-cinzel capitalize transition-all cursor-pointer flex items-center gap-2 ${
                       isSelected
-                        ? 'border-amber-400 bg-[#251e33] text-amber-200 font-bold shadow-[0_0_10px_rgba(212,175,55,0.3)]'
-                        : 'border-stone-800 bg-[#100d17] text-stone-400 hover:border-stone-700'
+                        ? 'border-amber-400 bg-[#251e33] text-amber-200 font-bold shadow-[0_0_12px_rgba(212,175,55,0.35)] ring-1 ring-amber-400/50'
+                        : 'border-stone-800 bg-[#100d17] text-stone-400 hover:border-stone-700 hover:text-stone-200'
                     }`}
                   >
-                    <span>{h.name}</span>
+                    {/* Mini avatar thumbnail */}
+                    <img
+                      src={h.avatarUrl}
+                      alt={h.name}
+                      referrerPolicy="no-referrer"
+                      className="w-6 h-6 rounded-full object-cover shrink-0 border border-black/40"
+                    />
+                    <div className="flex-1 truncate">
+                      <span className="block text-[11px] leading-tight">{h.name}</span>
+                    </div>
                     <div
-                      className="w-3 h-3 rounded-full"
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
                       style={{ backgroundColor: h.primaryColor }}
                     />
                   </button>

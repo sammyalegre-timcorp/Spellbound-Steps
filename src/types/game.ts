@@ -19,6 +19,7 @@ export interface HouseTheme {
   glowColor: string;
   motto: string;
   scarfColors: [string, string];
+  avatarUrl: string;
 }
 
 export interface AcademySettings {
