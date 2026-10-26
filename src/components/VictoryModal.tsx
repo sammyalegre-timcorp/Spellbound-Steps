@@ -66,7 +66,14 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
           <img
             src={ASSETS.castle}
             alt="Hogwarts Castle Sanctuary"
-            referrerPolicy="no-referrer"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.dataset.triedPublic) {
+                target.dataset.triedPublic = 'true';
+                const file = ASSETS.castle.split('/').pop();
+                if (file) target.src = `/assets/images/${file}`;
+              }
+            }}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#121017] via-transparent to-transparent" />
@@ -84,7 +91,14 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
           <img
             src={settings.customLogoUrl || ASSETS.crest}
             alt="Academy Crest"
-            referrerPolicy="no-referrer"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.dataset.triedPublic) {
+                target.dataset.triedPublic = 'true';
+                const file = (settings.customLogoUrl || ASSETS.crest).split('/').pop();
+                if (file) target.src = `/assets/images/${file}`;
+              }
+            }}
             className="w-full h-full object-contain rounded-full"
           />
         </div>

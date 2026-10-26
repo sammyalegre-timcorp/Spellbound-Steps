@@ -459,7 +459,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <img
                   src={settings.customLogoUrl || ASSETS.crest}
                   alt="Current Academy Crest"
-                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.dataset.triedPublic) {
+                      target.dataset.triedPublic = 'true';
+                      const file = (settings.customLogoUrl || ASSETS.crest).split('/').pop();
+                      if (file) target.src = `/assets/images/${file}`;
+                    }
+                  }}
                   className="w-28 h-28 object-contain rounded-full border-2 border-amber-400/50 p-1.5 bg-[#14121e] shadow-xl"
                 />
               </div>
@@ -542,7 +549,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <img
                           src={hTheme.avatarUrl}
                           alt={hTheme.name}
-                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            if (!target.dataset.triedPublic) {
+                              target.dataset.triedPublic = 'true';
+                              const file = hTheme.avatarUrl.split('/').pop();
+                              if (file) target.src = `/assets/images/${file}`;
+                            }
+                          }}
                           className="w-7 h-7 rounded-full object-cover border border-black/40"
                         />
                         <div className="flex-1 truncate">

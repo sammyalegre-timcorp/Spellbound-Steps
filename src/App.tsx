@@ -370,7 +370,14 @@ export default function App() {
               <img
                 src={currentHouse.avatarUrl || ASSETS.wizard}
                 alt={`${currentHouse.name} Student`}
-                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.dataset.triedPublic) {
+                    target.dataset.triedPublic = 'true';
+                    const file = (currentHouse.avatarUrl || ASSETS.wizard).split('/').pop();
+                    if (file) target.src = `/assets/images/${file}`;
+                  }
+                }}
                 className="w-full h-full object-cover rounded-full transition-opacity duration-200"
               />
               <div 
@@ -418,30 +425,42 @@ export default function App() {
                 return (
                   <button
                     key={house}
+                    type="button"
                     onClick={() => {
                       sound.playHopChime();
                       const updated = { ...settings, selectedHouse: house };
                       setSettings(updated);
                       saveStoredSettings(updated);
                     }}
-                    className={`p-1.5 rounded-lg border text-xs font-cinzel capitalize transition-all cursor-pointer flex items-center gap-2 ${
+                    className={`px-2.5 py-2 rounded-lg border font-cinzel transition-all cursor-pointer flex items-center gap-2 text-left ${
                       isSelected
                         ? 'border-amber-400 bg-[#251e33] text-amber-200 font-bold shadow-[0_0_12px_rgba(212,175,55,0.35)] ring-1 ring-amber-400/50'
                         : 'border-stone-800 bg-[#100d17] text-stone-400 hover:border-stone-700 hover:text-stone-200'
                     }`}
                   >
                     {/* Mini avatar thumbnail */}
-                    <img
-                      src={h.avatarUrl}
-                      alt={h.name}
-                      referrerPolicy="no-referrer"
-                      className="w-6 h-6 rounded-full object-cover shrink-0 border border-black/40"
-                    />
-                    <div className="flex-1 truncate">
-                      <span className="block text-[11px] leading-tight">{h.name}</span>
+                    <div className="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden shrink-0 border border-black/50 bg-[#181524]">
+                      <img
+                        src={h.avatarUrl}
+                        alt={h.name}
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (!target.dataset.triedPublic) {
+                            target.dataset.triedPublic = 'true';
+                            const file = h.avatarUrl.split('/').pop();
+                            if (file) target.src = `/assets/images/${file}`;
+                          }
+                        }}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="block text-[11px] sm:text-xs font-semibold whitespace-nowrap leading-tight">
+                        {h.name}
+                      </span>
                     </div>
                     <div
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs border border-black/40"
                       style={{ backgroundColor: h.primaryColor }}
                     />
                   </button>
