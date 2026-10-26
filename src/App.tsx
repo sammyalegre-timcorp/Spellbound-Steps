@@ -22,7 +22,7 @@ import { QuestionCard } from './components/QuestionCard';
 import { VictoryModal } from './components/VictoryModal';
 import { GameOverModal } from './components/GameOverModal';
 import { AdminPanel } from './components/AdminPanel';
-import { Flame, Wand2, Play, Volume2, VolumeX } from 'lucide-react';
+import { Flame, Wand2, Play, Volume2, VolumeX, ShieldCheck } from 'lucide-react';
 
 export default function App() {
   // Global settings & question bank
@@ -30,13 +30,15 @@ export default function App() {
   const [settings, setSettings] = useState<AcademySettings>(() => getStoredSettings());
   const [isMuted, setIsMuted] = useState<boolean>(() => sound.getMuted());
 
+  // Dynamic step count chosen in Admin (defaults to 10)
+  const TOTAL_STEPS = settings.totalSteps || 10;
+
   // Views: 'game' or 'admin' (Admin ONLY accessible via /admin URL)
   const [activeView, setActiveView] = useState<'game' | 'admin'>('game');
 
   // Game state
   const [gameStatus, setGameStatus] = useState<GameStatus>('TITLE');
-  const [currentStep, setCurrentStep] = useState<number>(0); // 0 (start cliff) to 10 (Hogwarts)
-  const TOTAL_STEPS = 10;
+  const [currentStep, setCurrentStep] = useState<number>(0); // 0 (start cliff) to TOTAL_STEPS (Hogwarts)
 
   // Question session state
   const [sessionQuestions, setSessionQuestions] = useState<TriviaQuestion[]>([]);
@@ -71,40 +73,59 @@ export default function App() {
   const timerRef = useRef<number | null>(null);
   const heartbeatAudioRef = useRef<number>(0);
 
-  // Route listener: Admin panel is ONLY accessible by typing or navigating to /admin (or #/admin) in the URL
+  // Robust URL route detection for Vercel and SPA hosting:
+  // Detects /admin, /admin/, subpaths ending with /admin, hash #/admin, or query ?admin
   useEffect(() => {
-    const handleLocationChange = () => {
-      const path = window.location.pathname;
-      const hash = window.location.hash;
-      if (path === '/admin' || hash === '#/admin' || hash === '#admin') {
+    const checkIsAdminRoute = () => {
+      const path = (window.location.pathname || '').toLowerCase();
+      const hash = (window.location.hash || '').toLowerCase();
+      const search = (window.location.search || '').toLowerCase();
+
+      const isAdmin = 
+        path === '/admin' || 
+        path === '/admin/' || 
+        path.endsWith('/admin') || 
+        path.endsWith('/admin/') || 
+        hash === '#/admin' || 
+        hash === '#admin' || 
+        hash.includes('admin') || 
+        search.includes('admin');
+
+      if (isAdmin) {
         setActiveView('admin');
       } else {
         setActiveView('game');
       }
     };
 
-    handleLocationChange();
-    window.addEventListener('popstate', handleLocationChange);
-    window.addEventListener('hashchange', handleLocationChange);
+    checkIsAdminRoute();
+    window.addEventListener('popstate', checkIsAdminRoute);
+    window.addEventListener('hashchange', checkIsAdminRoute);
     return () => {
-      window.removeEventListener('popstate', handleLocationChange);
-      window.removeEventListener('hashchange', handleLocationChange);
+      window.removeEventListener('popstate', checkIsAdminRoute);
+      window.removeEventListener('hashchange', checkIsAdminRoute);
     };
   }, []);
 
   // Return to game from admin
   const handleReturnFromAdmin = () => {
     setActiveView('game');
-    if (window.location.pathname === '/admin') {
+    const path = window.location.pathname.toLowerCase();
+    if (path.includes('admin')) {
       window.history.pushState(null, '', '/');
-    } else if (window.location.hash.includes('admin')) {
+    }
+    if (window.location.hash.toLowerCase().includes('admin')) {
       window.location.hash = '';
+    }
+    if (window.location.search.toLowerCase().includes('admin')) {
+      window.history.pushState(null, '', window.location.pathname);
     }
   };
 
   // Start / Restart a fresh game session
   const startNewGame = useCallback(() => {
-    const freshQuestions = getGameQuestionSet(16);
+    const poolCount = Math.max(16, (settings.totalSteps || 10) + 6);
+    const freshQuestions = getGameQuestionSet(poolCount);
     setSessionQuestions(freshQuestions);
     setCurrentQuestionIndex(0);
     setCurrentStep(0);
@@ -134,7 +155,7 @@ export default function App() {
 
     setGameStatus('PLAYING');
     sound.playHopChime();
-  }, [settings.initialTimeSeconds]);
+  }, [settings.initialTimeSeconds, settings.totalSteps]);
 
   // Depleting Timer Loop
   useEffect(() => {
@@ -233,7 +254,7 @@ export default function App() {
         setActiveSpellName(undefined);
 
         if (nextStep >= TOTAL_STEPS) {
-          // VICTORY: Completed all 10 steps to reach Hogwarts castle!
+          // VICTORY: Completed all configured steps to reach Hogwarts castle!
           setGameStatus('VICTORY');
         } else {
           setCurrentQuestionIndex((prev) => (prev + 1) % sessionQuestions.length);
@@ -283,7 +304,7 @@ export default function App() {
   const currentQuestion = sessionQuestions[currentQuestionIndex] || questions[0];
   const staminaPercent = Math.max(0, Math.min(100, (currentStaminaSeconds / maxStaminaSeconds) * 100));
 
-  // If in Admin mode (accessed only by /admin URL)
+  // If in Admin mode (accessible strictly by adding /admin to the URL)
   if (activeView === 'admin') {
     return (
       <div className="min-h-screen bg-[#08090d] text-[#ede5d8] overflow-y-auto selection:bg-amber-500/30 selection:text-amber-200">
@@ -342,8 +363,8 @@ export default function App() {
               The Fiendfyre Bridge
             </h1>
             <p className="text-xs text-[#b0a89a] mt-1.5 leading-relaxed max-w-md mx-auto">
-              Cross <strong>10 floating ancient stones</strong> to reach Hogwarts Castle before your magical stamina fades. 
-              Answer cybersecurity trivia to spellcast across the bridge!
+              Cross <strong>{TOTAL_STEPS} floating ancient stones</strong> to reach Hogwarts Castle before the cursed fire beasts overtake you. 
+              Answer cybersecurity defense trivia to cast wards and advance!
             </p>
           </div>
 
@@ -385,16 +406,16 @@ export default function App() {
           {/* Rules Triad */}
           <div className="grid grid-cols-3 gap-2 text-center text-[11px] text-[#9b9487]">
             <div className="p-1.5 rounded bg-[#13111b] border border-stone-800/80">
-              <span className="text-amber-300 font-cinzel block font-bold">10 Steps</span>
+              <span className="text-amber-300 font-cinzel block font-bold">{TOTAL_STEPS} Steps</span>
               <span>Hop across stones</span>
             </div>
             <div className="p-1.5 rounded bg-[#13111b] border border-stone-800/80">
-              <span className="text-emerald-400 font-cinzel block font-bold">Correct Spell</span>
-              <span>Hops + adds time</span>
+              <span className="text-emerald-400 font-cinzel block font-bold">Spell Wards</span>
+              <span>Advance + restore stamina</span>
             </div>
             <div className="p-1.5 rounded bg-[#13111b] border border-stone-800/80">
-              <span className="text-rose-400 font-cinzel block font-bold">Fizzle Penalty</span>
-              <span>Fiendfyre burns bar</span>
+              <span className="text-rose-400 font-cinzel block font-bold">Fiendfyre Surge</span>
+              <span>Flames burn stamina</span>
             </div>
           </div>
 
@@ -448,7 +469,7 @@ export default function App() {
         </div>
       )}
 
-      {/* VICTORY MODAL: Reached Hogwarts Castle! */}
+      {/* VICTORY MODAL: Reached Hogwarts Castle Sanctuary! */}
       {gameStatus === 'VICTORY' && (
         <VictoryModal
           stats={stats}

@@ -25,9 +25,10 @@ export interface AcademySettings {
   academyName: string;
   customLogoUrl: string | null;
   selectedHouse: HouseType;
-  initialTimeSeconds: number; // default 60
-  timeBonusCorrect: number; // default +10s
-  timePenaltyWrong: number; // default -15s
+  totalSteps: number; // default 10, range 5 to 15
+  initialTimeSeconds: number; // default 55
+  timeBonusCorrect: number; // default +8s
+  timePenaltyWrong: number; // default -12s
 }
 
 export type GameStatus = 'TITLE' | 'PLAYING' | 'CORRECT_ANIMATION' | 'WRONG_ANIMATION' | 'VICTORY' | 'GAME_OVER';

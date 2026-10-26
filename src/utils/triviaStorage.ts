@@ -282,6 +282,7 @@ export const DEFAULT_SETTINGS: AcademySettings = {
   academyName: 'Hogwarts School of Witchcraft & Cyber Defense',
   customLogoUrl: null,
   selectedHouse: 'gryffindor',
+  totalSteps: 10, // default 10 stepping stones
   initialTimeSeconds: 55, // balanced stamina bar
   timeBonusCorrect: 8, // +8 seconds
   timePenaltyWrong: 12, // -12 seconds
@@ -292,7 +293,7 @@ export function getStoredQuestions(): TriviaQuestion[] {
     const raw = localStorage.getItem(QUESTIONS_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length >= 10) {
+      if (Array.isArray(parsed) && parsed.length >= 5) {
         return parsed;
       }
     }
@@ -323,7 +324,12 @@ export function getStoredSettings(): AcademySettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (raw) {
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+      const parsed = JSON.parse(raw);
+      return { 
+        ...DEFAULT_SETTINGS, 
+        ...parsed, 
+        totalSteps: typeof parsed.totalSteps === 'number' && parsed.totalSteps >= 3 && parsed.totalSteps <= 20 ? parsed.totalSteps : 10 
+      };
     }
   } catch (err) {
     console.error('Error loading settings:', err);

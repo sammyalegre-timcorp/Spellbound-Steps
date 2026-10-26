@@ -98,7 +98,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
             Hogwarts Castle Safety!
           </h1>
           <p className="text-xs sm:text-sm text-[#b3aca0] mt-1 max-w-md mx-auto">
-            You successfully cast your way across all 10 floating stone steps, leaving the cursed Fiendfyre flames behind!
+            You successfully cast your way across all {settings.totalSteps || 10} floating stone steps, entering the ancient protective wards of Hogwarts Castle!
           </p>
         </div>
 

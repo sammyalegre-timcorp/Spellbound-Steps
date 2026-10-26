@@ -19,7 +19,8 @@ import {
   Sliders, 
   Image as ImageIcon,
   HelpCircle,
-  Sparkles
+  Sparkles,
+  Footprints
 } from 'lucide-react';
 import { HOUSE_THEMES, ASSETS, DEFAULT_QUESTIONS, DEFAULT_SETTINGS } from '../utils/triviaStorage';
 import { sound } from '../utils/audio';
@@ -111,8 +112,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   // Handle Question Deletion
   const handleDeleteQuestion = (id: string) => {
-    if (questions.length <= 10) {
-      showNotice('Cannot delete: A minimum of 10 trivia questions is required for the bridge game!', 'error');
+    const minRequired = Math.max(5, settings.totalSteps || 5);
+    if (questions.length <= minRequired) {
+      showNotice(`Cannot delete: A minimum of ${minRequired} trivia questions is required for the bridge game!`, 'error');
       return;
     }
     const updated = questions.filter((q) => q.id !== id);
@@ -563,8 +565,57 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <div className="parchment-card p-6 rounded-xl border border-[#d4af37]/30 space-y-6">
             <h2 className="font-cinzel text-lg font-bold text-amber-300 border-b border-[#d4af37]/20 pb-2 flex items-center gap-2">
               <Sliders className="w-4 h-4 text-amber-400" />
-              <span>Magical Stamina & Penalty Tuning</span>
+              <span>Bridge Length & Stamina Tuning</span>
             </h2>
+
+            {/* Total Stepping Stones (Bridge Length) */}
+            <div className="space-y-2 pb-4 border-b border-[#d4af37]/15">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-cinzel text-amber-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                  <Footprints className="w-4 h-4 text-amber-400" />
+                  <span>Number of Stepping Stones</span>
+                </span>
+                <span className="font-mono text-amber-300 font-bold text-sm tabular-nums">
+                  {settings.totalSteps || 10} Stones to Cross
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="range"
+                  min={3}
+                  max={15}
+                  step={1}
+                  value={settings.totalSteps || 10}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10);
+                    onSaveSettings({ ...settings, totalSteps: val });
+                  }}
+                  className="flex-1 accent-amber-400 cursor-pointer"
+                />
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                {[5, 7, 10, 12, 15].map((count) => (
+                  <button
+                    key={count}
+                    type="button"
+                    onClick={() => {
+                      sound.playParchmentClick();
+                      onSaveSettings({ ...settings, totalSteps: count });
+                    }}
+                    className={`px-3 py-1 text-xs font-mono rounded border transition-colors cursor-pointer ${
+                      (settings.totalSteps || 10) === count
+                        ? 'bg-amber-500/25 text-amber-300 border-amber-400 font-bold shadow-[0_0_8px_rgba(251,191,36,0.25)]'
+                        : 'bg-[#15121e] text-stone-400 border-stone-800 hover:text-stone-200'
+                    }`}
+                  >
+                    {count} Steps
+                  </button>
+                ))}
+              </div>
+              <p className="text-[11px] text-[#8e877a]">
+                Choose how many floating stone steps the wizard must cross to reach Hogwarts Castle safety.
+              </p>
+            </div>
 
             {/* Initial Time Seconds */}
             <div className="space-y-1">
@@ -632,6 +683,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 onClick={() => {
                   onSaveSettings({
                     ...settings,
+                    totalSteps: DEFAULT_SETTINGS.totalSteps,
                     initialTimeSeconds: DEFAULT_SETTINGS.initialTimeSeconds,
                     timeBonusCorrect: DEFAULT_SETTINGS.timeBonusCorrect,
                     timePenaltyWrong: DEFAULT_SETTINGS.timePenaltyWrong,
