@@ -24,13 +24,16 @@ import { GameOverModal } from './components/GameOverModal';
 import { AdminPanel } from './components/AdminPanel';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { OfflineIndicator } from './components/OfflineIndicator';
-import { Flame, Wand2, Play, Volume2, VolumeX, ShieldCheck } from 'lucide-react';
+import { Flame, Wand2, Play, Volume2, VolumeX, ShieldCheck, Maximize, Minimize } from 'lucide-react';
 
 export default function App() {
   // Global settings & question bank
   const [questions, setQuestions] = useState<TriviaQuestion[]>(() => getStoredQuestions());
   const [settings, setSettings] = useState<AcademySettings>(() => getStoredSettings());
   const [isMuted, setIsMuted] = useState<boolean>(() => sound.getMuted());
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(() => {
+    return typeof document !== 'undefined' && Boolean(document.fullscreenElement || (document as any).webkitFullscreenElement);
+  });
 
   // Dynamic step count chosen in Admin (defaults to 10)
   const TOTAL_STEPS = settings.totalSteps || 10;
@@ -123,6 +126,58 @@ export default function App() {
       window.history.pushState(null, '', window.location.pathname);
     }
   };
+
+  // Fullscreen Toggle Handler (supporting standard & webkit Fullscreen API)
+  const toggleFullscreen = useCallback(async () => {
+    sound.playParchmentClick();
+    try {
+      if (!document.fullscreenElement && !(document as any).webkitFullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        } else if ((document.documentElement as any).webkitRequestFullscreen) {
+          await (document.documentElement as any).webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if ((document as any).webkitExitFullscreen) {
+          await (document as any).webkitExitFullscreen();
+        }
+      }
+    } catch (err) {
+      console.warn('Fullscreen request could not be fulfilled:', err);
+    }
+  }, []);
+
+  // Synchronize fullscreen state on changes & support 'F' key shortcut
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement || (document as any).webkitFullscreenElement));
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || (e.target as HTMLElement)?.isContentEditable) {
+        return;
+      }
+      if (e.key === 'f' || e.key === 'F') {
+        if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+          e.preventDefault();
+          toggleFullscreen();
+        }
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [toggleFullscreen]);
 
   // Start / Restart a fresh game session
   const startNewGame = useCallback(() => {
@@ -339,9 +394,21 @@ export default function App() {
         <div className="fixed inset-0 pointer-events-none z-50 animate-panic-flash border-4 border-red-600/70" />
       )}
 
-      {/* Floating Controls (Top-Right): PWA Install + Sound Toggle */}
+      {/* Floating Controls (Top-Right): PWA Install + Fullscreen + Sound Toggle */}
       <div className="absolute top-2.5 right-3 z-40 flex items-center gap-2">
         <PWAInstallButton />
+        <button
+          onClick={toggleFullscreen}
+          aria-label={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen'}
+          title={isFullscreen ? 'Exit Full Screen (Esc or F)' : 'Enter Full Screen (F)'}
+          className="p-1.5 sm:p-2 rounded-full bg-[#12101b]/80 border border-amber-400/30 text-stone-300 hover:text-amber-300 backdrop-blur-sm shadow-md transition-all hover:scale-105 cursor-pointer"
+        >
+          {isFullscreen ? (
+            <Minimize className="w-4 h-4 text-amber-300" />
+          ) : (
+            <Maximize className="w-4 h-4 text-stone-300" />
+          )}
+        </button>
         <button
           onClick={handleToggleSound}
           aria-label={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
@@ -485,14 +552,32 @@ export default function App() {
             </div>
           </div>
 
-          {/* Start Button */}
-          <div className="pt-1">
+          {/* Start and Fullscreen Controls */}
+          <div className="pt-1 flex flex-col sm:flex-row items-center justify-center gap-2">
             <button
               onClick={startNewGame}
-              className="w-full sm:w-auto px-8 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-cinzel font-bold text-xs sm:text-sm tracking-wider uppercase transition-all duration-200 shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:scale-[1.02] flex items-center justify-center gap-2 mx-auto cursor-pointer"
+              className="w-full sm:w-auto px-7 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-cinzel font-bold text-xs sm:text-sm tracking-wider uppercase transition-all duration-200 shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:scale-[1.02] flex items-center justify-center gap-2 cursor-pointer"
             >
               <Play className="w-4 h-4 fill-stone-950" />
               <span>Begin Bridge Crossing</span>
+            </button>
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              title={isFullscreen ? 'Exit Full Screen (Esc or F)' : 'Enter Full Screen (F)'}
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-[#d4af37]/35 hover:border-amber-400/70 bg-[#14111d]/90 hover:bg-[#201a2d] text-stone-300 hover:text-amber-200 font-cinzel text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+            >
+              {isFullscreen ? (
+                <>
+                  <Minimize className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Exit Fullscreen</span>
+                </>
+              ) : (
+                <>
+                  <Maximize className="w-3.5 h-3.5 text-stone-300" />
+                  <span>Fullscreen Mode</span>
+                </>
+              )}
             </button>
           </div>
         </div>
